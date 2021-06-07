@@ -1,0 +1,62 @@
+//* This file is part of the MOOSE framework
+//* https://www.mooseframework.org
+//*
+//* All rights reserved, see COPYRIGHT for full restrictions
+//* https://github.com/idaholab/moose/blob/master/COPYRIGHT
+//*
+//* Licensed under LGPL 2.1, please see LICENSE for details
+//* https://www.gnu.org/licenses/lgpl-2.1.html
+#include "Phase_fieldsTestApp.h"
+#include "Phase_fieldsApp.h"
+#include "Moose.h"
+#include "AppFactory.h"
+#include "MooseSyntax.h"
+#include "ModulesApp.h"
+
+InputParameters
+Phase_fieldsTestApp::validParams()
+{
+  InputParameters params = Phase_fieldsApp::validParams();
+  return params;
+}
+
+Phase_fieldsTestApp::Phase_fieldsTestApp(InputParameters parameters) : MooseApp(parameters)
+{
+  Phase_fieldsTestApp::registerAll(
+      _factory, _action_factory, _syntax, getParam<bool>("allow_test_objects"));
+}
+
+Phase_fieldsTestApp::~Phase_fieldsTestApp() {}
+
+void
+Phase_fieldsTestApp::registerAll(Factory & f, ActionFactory & af, Syntax & s, bool use_test_objs)
+{
+  Phase_fieldsApp::registerAll(f, af, s);
+  if (use_test_objs)
+  {
+    Registry::registerObjectsTo(f, {"Phase_fieldsTestApp"});
+    Registry::registerActionsTo(af, {"Phase_fieldsTestApp"});
+  }
+}
+
+void
+Phase_fieldsTestApp::registerApps()
+{
+  registerApp(Phase_fieldsApp);
+  registerApp(Phase_fieldsTestApp);
+}
+
+/***************************************************************************************************
+ *********************** Dynamic Library Entry Points - DO NOT MODIFY ******************************
+ **************************************************************************************************/
+// External entry point for dynamic application loading
+extern "C" void
+Phase_fieldsTestApp__registerAll(Factory & f, ActionFactory & af, Syntax & s)
+{
+  Phase_fieldsTestApp::registerAll(f, af, s);
+}
+extern "C" void
+Phase_fieldsTestApp__registerApps()
+{
+  Phase_fieldsTestApp::registerApps();
+}
